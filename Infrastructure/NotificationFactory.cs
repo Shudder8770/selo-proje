@@ -1,11 +1,10 @@
 using SmartCampus.Domain.Notifications;
-using SmartCampus.Infrastructure;
 
-namespace SmartCampus.Application;
+namespace SmartCampus.Infrastructure;
 
-public static class NotificationFactory
+public sealed class NotificationFactory : INotificationFactory
 {
-    public static INotification Create(NotificationChannel channel) => channel switch
+    public INotification Create(NotificationChannel channel) => channel switch
     {
         NotificationChannel.Email => new EmailNotification(),
         NotificationChannel.Sms => new SmsNotification(),
