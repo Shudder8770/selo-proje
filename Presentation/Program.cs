@@ -12,6 +12,11 @@ public static class Program
 {
     public static void Main()
     {
+        RunDemoScenario();
+    }
+
+    private static void RunDemoScenario()
+    {
         Logger.Instance.Info("Akıllı Kampüs Duyuru ve Bildirim Yönetim Sistemi başladı.");
 
         var publisher = new AnnouncementPublisher();
