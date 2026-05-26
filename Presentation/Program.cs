@@ -19,14 +19,9 @@ public static class Program
         var userService = new UserService(userRepository);
         var announcementService = new AnnouncementService(announcementRepository, new AnnouncementPublisher());
 
-        userService.AddUser(new Student("Ayşe Yılmaz", [NotificationChannel.Email, NotificationChannel.Push]));
-        userService.AddUser(new Student("Mehmet Demir", [NotificationChannel.Sms]));
-        userService.AddUser(new Teacher("Dr. Elif Kaya", [NotificationChannel.Email, NotificationChannel.Sms]));
-
-        foreach (var user in userService.ListUsers())
-        {
-            announcementService.Subscribe(user);
-        }
+        publisher.Subscribe(new UserAnnouncementObserver(student1));
+        publisher.Subscribe(new UserAnnouncementObserver(student2));
+        publisher.Subscribe(new UserAnnouncementObserver(teacher1));
 
         var examAnnouncement = AnnouncementFactory.Create(
             AnnouncementType.Exam,
