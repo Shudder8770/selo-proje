@@ -3,6 +3,7 @@ using SmartCampus.Domain.Announcements;
 using SmartCampus.Domain.Notifications;
 using SmartCampus.Domain.Users;
 using SmartCampus.Infrastructure;
+using SmartCampus.Infrastructure.Repositories;
 
 namespace SmartCampus;
 
@@ -12,21 +13,38 @@ public static class Program
     {
         Logger.Instance.Info("Akıllı Kampüs Duyuru ve Bildirim Yönetim Sistemi başladı.");
 
-        var publisher = new AnnouncementPublisher();
+        var userRepository = new InMemoryUserRepository();
+        var announcementRepository = new InMemoryAnnouncementRepository();
 
-        var student1 = new Student("Ayşe Yılmaz", [NotificationChannel.Email, NotificationChannel.Push]);
-        var student2 = new Student("Mehmet Demir", [NotificationChannel.Sms]);
-        var teacher1 = new Teacher("Dr. Elif Kaya", [NotificationChannel.Email, NotificationChannel.Sms]);
+        var userService = new UserService(userRepository);
+        var announcementService = new AnnouncementService(announcementRepository, new AnnouncementPublisher());
 
-        publisher.Subscribe(new StudentObserver(student1));
-        publisher.Subscribe(new StudentObserver(student2));
-        publisher.Subscribe(new TeacherObserver(teacher1));
+        userService.AddUser(new Student("Ayşe Yılmaz", [NotificationChannel.Email, NotificationChannel.Push]));
+        userService.AddUser(new Student("Mehmet Demir", [NotificationChannel.Sms]));
+        userService.AddUser(new Teacher("Dr. Elif Kaya", [NotificationChannel.Email, NotificationChannel.Sms]));
+
+        foreach (var user in userService.ListUsers())
+        {
+            announcementService.Subscribe(user);
+        }
 
         var examAnnouncement = AnnouncementFactory.Create(
             AnnouncementType.Exam,
             "Vize Tarihi Güncellemesi",
             "BIL3204 vize sınavı 3 Haziran 2026 saat 10:00'a alınmıştır.");
 
-        publisher.Publish(examAnnouncement);
+        announcementService.Publish(examAnnouncement);
+
+        Logger.Instance.Info("Kayıtlı kullanıcılar:");
+        foreach (var user in userService.ListUsers())
+        {
+            Logger.Instance.Info($"- {user.Type}: {user.FullName}");
+        }
+
+        Logger.Instance.Info("Duyuru geçmişi:");
+        foreach (var announcement in announcementService.GetAnnouncementHistory())
+        {
+            Logger.Instance.Info($"- {announcement}");
+        }
     }
 }
