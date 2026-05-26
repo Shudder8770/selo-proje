@@ -18,9 +18,9 @@ public static class Program
         var student2 = new Student("Mehmet Demir", [NotificationChannel.Sms]);
         var teacher1 = new Teacher("Dr. Elif Kaya", [NotificationChannel.Email, NotificationChannel.Sms]);
 
-        publisher.Subscribe(new StudentObserver(student1));
-        publisher.Subscribe(new StudentObserver(student2));
-        publisher.Subscribe(new TeacherObserver(teacher1));
+        publisher.Subscribe(new UserAnnouncementObserver(student1));
+        publisher.Subscribe(new UserAnnouncementObserver(student2));
+        publisher.Subscribe(new UserAnnouncementObserver(teacher1));
 
         var examAnnouncement = AnnouncementFactory.Create(
             AnnouncementType.Exam,
